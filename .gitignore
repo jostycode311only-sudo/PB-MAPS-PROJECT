@@ -1,0 +1,7 @@
+# Ignorar dependencias de Node.js (si usas npm)
+/node_modules
+
+# Ignorar archivos de sistema y de IDEs
+.DS_Store             # Archivos de macOS
+.vscode/              # Configuraciones de Visual Studio Code
+*.log                 # Archivos de log
