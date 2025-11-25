@@ -14,12 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 3. Validación Inicial de Datos
     if (empty($nombre) || empty($email) || empty($password) || empty($confirm_password)) {
-        header("Location: ../../public/registro.html?error=campos_vacios");
+        header("Location: ../../htdocs_public/registro.html?error=campos_vacios");
         exit;
     }
     
     if ($password !== $confirm_password) {
-        header("Location: ../../public/registro.html?error=contraseñas_no_coinciden");
+        header("Location: ../../htdocs_public/registro.html?error=contraseñas_no_coinciden");
         exit;
     }
 
@@ -34,17 +34,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 5. Redirección Basada en el Resultado
     if ($registroExitoso) {
         // Éxito: Redirigir al Login
-        header("Location: ../../public/login.html?success=registro_exitoso");
+        header("Location: ../../htdocs_public/login.html?success=registro_exitoso");
         exit;
     } else {
         // Fallo: Redirigir al Registro (Ej. el email ya está registrado, lo que causaría una excepción en el Modelo)
-        header("Location: ../../public/registro.html?error=email_existente");
+        header("Location: ../../htdocs_public/registro.html?error=email_existente");
         exit;
     }
 
 } else {
     // Si la solicitud no es POST, redirigir al inicio.
-    header("Location: ../../public/index.html");
+    header("Location: ../../htdocs_public/index.html");
     exit;
 }
 
