@@ -10,7 +10,7 @@ class User {
         $this->pdo = connectDB();
     }
 
-    // Función de Login (Ya la tenías bien)
+    // Función de Login 
     public function findUserByEmail(string $email, string $password): array|bool {
         $sql = "SELECT id, nombre_usuario, email, password_hash, rol FROM usuario WHERE email = ?";
         
@@ -31,15 +31,12 @@ class User {
             return false;
         }
     }
-
-    // ---------------------------------------------------------
-    //  AQUÍ ESTÁ LA CORRECCIÓN: EL CÓDIGO REAL DE REGISTRO
-    // ---------------------------------------------------------
+    // Función de Registro
     public function registrarUsuario(string $nombre, string $email, string $password): bool {
         // 1. Encriptar contraseña
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         
-        // 2. Definir rol por defecto (Usamos 'admin' según tus capturas de base de datos)
+        // 2. Definir rol por defecto (administrador, ya que por ahora se esta probando los CRUD del proyecto)
         $rol = 'administrador'; 
 
         // 3. Consulta SQL

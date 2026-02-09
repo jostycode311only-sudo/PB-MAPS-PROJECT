@@ -5,7 +5,7 @@ session_start();
 require_once __DIR__ . '/../Models/User.php';
 
 $dashboardPath = '/PB-MAPS-PROJECT/htdocs_public/admin/dashboard.php';
-$loginPath = '/PB-MAPS-PROJECT/htdocs_public/login.html';
+$loginPath = '/PB-MAPS-PROJECT/htdocs_public/login.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: $loginPath?error=metodo_invalido");

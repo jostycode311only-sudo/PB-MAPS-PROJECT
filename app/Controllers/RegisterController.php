@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 5. Redirección Basada en el Resultado
     if ($registroExitoso) {
         // Éxito: Redirigir al Login
-        header("Location: ../../htdocs_public/login.html?success=registro_exitoso");
+        header("Location: ../../htdocs_public/login.php?success=registro_exitoso");
         exit;
     } else {
         // Fallo: Redirigir al Registro (Ej. el email ya está registrado, lo que causaría una excepción en el Modelo)

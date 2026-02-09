@@ -48,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT
     
     $nombre = trim($input['nombre_lugar'] ?? $input['nombre'] ?? ''); 
     $descripcion = trim($input['descripcion'] ?? '');
+    // NUEVO: Capturamos la categoría, si no existe ponemos 'Sitio General' por defecto
+    $categoria = trim($input['categoria'] ?? 'Sitio General');
     $urlImagen = trim($input['url_imagen'] ?? ''); 
     
     $adminId = $_SESSION['user_id'] ?? null; 
@@ -75,13 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT
             (new Response("ID de lugar inválido para la actualización.", 400))->send();
             exit;
         }
-        $resultado = $lugarModel->actualizarLugar((int)$idLugar, $nombre, $descripcion, $urlImagen);
+        // ACTUALIZADO: Pasamos la categoría al método actualizarLugar
+        $resultado = $lugarModel->actualizarLugar((int)$idLugar, $nombre, $descripcion, $categoria, $urlImagen);
         $mensaje = $resultado ? "Lugar turístico actualizado con éxito." : "Error al actualizar el lugar.";
         $statusCode = $resultado ? 200 : 500;
         
     } else {
         // B) OPERACIÓN DE CREACIÓN (POST)
-        $resultado = $lugarModel->insertarLugar($nombre, $descripcion, $urlImagen, $adminId);
+        // ACTUALIZADO: Pasamos la categoría al método insertarLugar
+        $resultado = $lugarModel->insertarLugar($nombre, $descripcion, $categoria, $urlImagen, $adminId);
         $mensaje = $resultado ? "Lugar turístico creado con éxito." : "Error al guardar el lugar.";
         $statusCode = $resultado ? 201 : 500;
     }

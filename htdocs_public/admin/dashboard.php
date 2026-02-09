@@ -25,7 +25,7 @@ $lugares = $lugarModel->obtenerLugares();
         <a class="navbar-brand" href="#">PB-MAPS Admin</a>
         <div class="d-flex">
             <span class="navbar-text me-3">
-                Bienvenido, **<?= htmlspecialchars($_SESSION['user_name'] ?? 'Admin') ?>**
+                Bienvenido, <strong><?= htmlspecialchars($_SESSION['user_name'] ?? 'Admin') ?></strong>
             </span>
             <a href="../../app/Controllers/LogoutController.php" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
         </div>
@@ -60,6 +60,7 @@ $lugares = $lugarModel->obtenerLugares();
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
+    
     <h2 id="gestionLugares" class="mb-4">Gestión de Lugares Turísticos</h2>
 
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#lugarModal" id="btnCrearLugar">
@@ -72,6 +73,7 @@ $lugares = $lugarModel->obtenerLugares();
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
+                    <th>Categoría</th> <!-- NUEVA COLUMNA -->
                     <th>Descripción</th>
                     <th>Imagen URL</th>
                     <th>Fecha Creación</th>
@@ -84,6 +86,12 @@ $lugares = $lugarModel->obtenerLugares();
                         <tr>
                             <td><?= htmlspecialchars($lugar['id']) ?></td>
                             <td class="fw-bold"><?= htmlspecialchars($lugar['nombre']) ?></td>
+                            <!-- NUEVA COLUMNA DE DATOS -->
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    <?= htmlspecialchars($lugar['categoria'] ?? 'Sitio General') ?>
+                                </span>
+                            </td>
                             <td><?= htmlspecialchars(substr($lugar['descripcion'], 0, 50)) . '...' ?></td>
                             <td><a href="<?= htmlspecialchars($lugar['url_imagen']) ?>" target="_blank">Ver</a></td>
                             <td><?= date('Y-m-d', strtotime($lugar['fecha_creacion'])) ?></td>
@@ -105,7 +113,7 @@ $lugares = $lugarModel->obtenerLugares();
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="6" class="text-center text-muted">Aún no hay lugares turísticos registrados.</td>
+                        <td colspan="7" class="text-center text-muted">Aún no hay lugares turísticos registrados.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -121,7 +129,7 @@ $lugares = $lugarModel->obtenerLugares();
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="lugarForm" method="POST">
+                <form id="lugarForm" method="POST" action="../../app/Controllers/LugarController.php">
                     
                     <input type="hidden" id="id_lugar" name="id_lugar">
 
@@ -129,6 +137,18 @@ $lugares = $lugarModel->obtenerLugares();
                         <label for="nombre_lugar" class="form-label">Nombre del Lugar</label>
                         <input type="text" class="form-control" id="nombre_lugar" name="nombre_lugar" required>
                     </div>
+
+                    <!-- NUEVO CAMPO SELECTOR DE CATEGORÍA -->
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoría</label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            <option value="Sitio General">Sitio General</option>
+                            <option value="Hotel">Hotel</option>
+                            <option value="Restaurante">Restaurante</option>
+                            <option value="Ruta Ecológica">Ruta Ecológica</option>
+                        </select>
+                    </div>
+
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
                         <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
