@@ -1,19 +1,17 @@
 <?php
 // app/Controllers/CheckAuth.php
 
-if (session_status() == PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$loginPath = '/PB-MAPS-PROJECT/htdocs_public/login.php';
-
-if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
-    header("Location: $loginPath?error=no_autenticado");
+// 1. Verificar si hay sesión iniciada (Usamos user_id, que es lo que guarda el AuthController)
+if (!isset($_SESSION['user_id'])) {
+    // Si no está logueado, mandar al login
+    // Ajusta la ruta si es necesario según tu estructura
+    header("Location: /PB-MAPS-PROJECT/htdocs_public/login.php?error=no_autenticado");
     exit;
 }
 
-if ($_SESSION['user_rol'] !== 'administrador') {
-    header("Location: $loginPath?error=acceso_denegado");
-    exit;
-}
+// NOTA: Aquí NO verificamos roles. Dejamos pasar a los turistas para que puedan chatear.
 ?>

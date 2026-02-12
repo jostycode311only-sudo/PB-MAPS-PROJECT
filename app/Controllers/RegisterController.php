@@ -1,51 +1,63 @@
 <?php
 // app/Controllers/RegisterController.php
-
-// 1. Incluir el Modelo User.php para acceder a la lógica de negocio y la DB.
-require_once __DIR__ . '/../Models/User.php';
+session_start();
+// Usamos la conexión directa para tener control total del SQL y el ROL
+require_once __DIR__ . '/../config/db.php'; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // 2. Saneamiento de Entradas (Sanitization)
-    $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+    // 1. Recoger y Sanear datos
+    // Usamos filter_var como tenías, es buena práctica
+    $nombre = filter_var(trim($_POST['nombre'] ?? ''), FILTER_SANITIZE_STRING);
+    $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-
-    // 3. Validación Inicial de Datos
-    if (empty($nombre) || empty($email) || empty($password) || empty($confirm_password)) {
+    
+    // 2. Validaciones Básicas
+    if (empty($nombre) || empty($email) || empty($password)) {
         header("Location: ../../htdocs_public/registro.html?error=campos_vacios");
         exit;
     }
-    
+
+    // Validación: Contraseñas coinciden (Manteniendo tu lógica)
     if ($password !== $confirm_password) {
         header("Location: ../../htdocs_public/registro.html?error=contraseñas_no_coinciden");
         exit;
     }
 
-    // 4. Lógica del Modelo: Registro en la Base de Datos
+    // 3. Conexión a Base de Datos
+    $pdo = connectDB();
     
-    // Instanciar el Modelo (Crea la conexión a la DB)
-    $userModel = new User();
-    
-    // Llamar al método del Modelo para intentar registrar al usuario
-    $registroExitoso = $userModel->registrarUsuario($nombre, $email, $password);
-
-    // 5. Redirección Basada en el Resultado
-    if ($registroExitoso) {
-        // Éxito: Redirigir al Login
-        header("Location: ../../htdocs_public/login.php?success=registro_exitoso");
-        exit;
-    } else {
-        // Fallo: Redirigir al Registro (Ej. el email ya está registrado, lo que causaría una excepción en el Modelo)
+    // 4. Verificar si el email ya existe
+    $stmt = $pdo->prepare("SELECT id FROM usuario WHERE email = ?");
+    $stmt->execute([$email]);
+    if ($stmt->fetch()) {
         header("Location: ../../htdocs_public/registro.html?error=email_existente");
         exit;
     }
 
+    // 5. Encriptar contraseña y DEFINIR ROL TURISTA
+    // Aquí está la clave: forzamos 'usuario_regular' sin importar qué diga el modelo
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+    $rol = 'usuario_regular'; 
+
+    // 6. Insertar en la Base de Datos
+    $sql = "INSERT INTO usuario (nombre_usuario, email, password_hash, rol) VALUES (?, ?, ?, ?)";
+    $stmtInsert = $pdo->prepare($sql);
+    
+    if ($stmtInsert->execute([$nombre, $email, $passwordHash, $rol])) {
+        // Éxito: Redirigir al Login
+        header("Location: ../../htdocs_public/login.php?success=registro_exitoso");
+        exit;
+    } else {
+        // Fallo técnico
+        header("Location: ../../htdocs_public/registro.html?error=fallo_registro");
+        exit;
+    }
+
 } else {
-    // Si la solicitud no es POST, redirigir al inicio.
+    // Si intentan entrar por GET, mandar al home
     header("Location: ../../htdocs_public/index.html");
     exit;
 }
-
 ?>

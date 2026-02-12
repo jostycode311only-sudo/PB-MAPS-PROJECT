@@ -1,7 +1,16 @@
 <?php
 // htdocs_public/chat_turista.php
 session_start();
-require_once __DIR__ . '/../app/Controllers/CheckAuth.php'; 
+
+// --- CORRECCIÓN DE SEGURIDAD ---
+// No usamos CheckAuth.php porque ese bloquea a los turistas.
+// Solo verificamos que el usuario haya iniciado sesión.
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php?error=debes_iniciar_sesion");
+    exit;
+}
+// -------------------------------
+
 require_once __DIR__ . '/../app/Models/Usuario.php'; 
 
 // 1. Validar que haya un ID de operador en la URL
@@ -18,11 +27,6 @@ if ($operadorId === $miId) {
     echo "<script>alert('No puedes chatear contigo mismo.'); window.location.href='operadores.php';</script>";
     exit;
 }
-
-// Obtener datos básicos del operador (nombre) para mostrar en el título
-// Usamos una consulta rápida directa o un método del modelo
-// Por simplicidad, lo mostraremos genérico o podríamos agregar un método "obtenerUsuarioPorId" en User.php
-// Asumiremos que carga vía JS para no complicar el backend ahora.
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -76,6 +80,7 @@ if ($operadorId === $miId) {
     </div>
 </div>
 
-<script src="js/chat_turista.js"></script>
+<!-- Lógica JS específica para el turista -->
+<script src="js/chat_turista.js?v=2"></script>
 </body>
 </html>

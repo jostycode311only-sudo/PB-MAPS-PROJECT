@@ -1,6 +1,5 @@
 <?php
 // app/Models/Lugar.php
-
 require_once __DIR__ . '/../config/db.php';
 
 class Lugar {
@@ -10,64 +9,75 @@ class Lugar {
         $this->pdo = connectDB();
     }
 
-    public function insertarLugar(string $nombre, string $descripcion, string $urlImagen, int $adminId): bool {
-        $sql = "INSERT INTO lugarturistico (nombre, descripcion, url_imagen, fk_admin_id) VALUES (?, ?, ?, ?)";
-        
+    // 1. Insertar nuevo lugar (Actualizado con Categoría)
+    public function insertarLugar($nombre, $descripcion, $categoria, $url_imagen, $admin_id) {
+        $sql = "INSERT INTO lugarturistico (nombre, descripcion, categoria, url_imagen, fk_admin_id, fecha_creacion) 
+                VALUES (?, ?, ?, ?, ?, NOW())";
         try {
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$nombre, $descripcion, $urlImagen, $adminId]);
-        } catch (\PDOException $e) {
-            error_log("Error al insertar lugar: " . $e->getMessage());
+            return $stmt->execute([$nombre, $descripcion, $categoria, $url_imagen, $admin_id]);
+        } catch (PDOException $e) {
+            error_log("Error Lugar::insertarLugar: " . $e->getMessage());
             return false;
         }
     }
 
-    public function obtenerLugares(): array|bool {
-        $sql = "SELECT id, nombre, descripcion, url_imagen, fecha_creacion FROM lugarturistico ORDER BY nombre ASC";
-        
+    // 2. Obtener TODOS los lugares (Para Dashboard Admin)
+    public function obtenerLugares() {
+        $sql = "SELECT * FROM lugarturistico ORDER BY fecha_creacion DESC";
         try {
             $stmt = $this->pdo->query($sql);
-            return $stmt->fetchAll();
-        } catch (\PDOException $e) {
-            error_log("Error al obtener lugares: " . $e->getMessage());
-            return false;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error Lugar::obtenerLugares: " . $e->getMessage());
+            return [];
         }
     }
-    
-    public function obtenerLugarPorId(int $id): array|bool {
-        $sql = "SELECT id, nombre, descripcion, url_imagen FROM lugarturistico WHERE id = ?";
-        
+
+    // 3. Obtener Lugares POR CATEGORÍA (Vital para Hoteles.php)
+    // ESTA ES LA FUNCIÓN QUE TE FALTABA
+    public function obtenerLugaresPorCategoria($categoria) {
+        $sql = "SELECT * FROM lugarturistico WHERE categoria = ? ORDER BY fecha_creacion DESC";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$categoria]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error Lugar::obtenerLugaresPorCategoria: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // 4. Obtener un solo lugar por ID (Para Editar)
+    public function obtenerLugarPorId($id) {
+        $sql = "SELECT * FROM lugarturistico WHERE id = ?";
         try {
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$id]);
-            return $stmt->fetch();
-        } catch (\PDOException $e) {
-            error_log("Error al obtener lugar por ID: " . $e->getMessage());
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
             return false;
         }
     }
-    
-    public function actualizarLugar(int $idLugar, string $nombre, string $descripcion, string $urlImagen): bool {
-        $sql = "UPDATE lugarturistico SET nombre = ?, descripcion = ?, url_imagen = ? WHERE id = ?";
-        
+
+    // 5. Actualizar lugar (Actualizado con Categoría)
+    public function actualizarLugar($id, $nombre, $descripcion, $categoria, $url_imagen) {
+        $sql = "UPDATE lugarturistico SET nombre = ?, descripcion = ?, categoria = ?, url_imagen = ? WHERE id = ?";
         try {
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$nombre, $descripcion, $urlImagen, $idLugar]);
-        } catch (\PDOException $e) {
-            error_log("Error al actualizar lugar: " . $e->getMessage());
+            return $stmt->execute([$nombre, $descripcion, $categoria, $url_imagen, $id]);
+        } catch (PDOException $e) {
             return false;
         }
     }
-    
-    public function eliminarLugar(int $idLugar): bool {
+
+    // 6. Eliminar lugar
+    public function eliminarLugar($id) {
         $sql = "DELETE FROM lugarturistico WHERE id = ?";
-        
         try {
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$idLugar]);
-            
-        } catch (\PDOException $e) {
-            error_log("Error al eliminar lugar: " . $e->getMessage());
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
             return false;
         }
     }

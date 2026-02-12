@@ -1,10 +1,22 @@
 <?php
 // htdocs_public/admin/dashboard.php
 
-// 1. Incluir la guardia de seguridad
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once __DIR__ . '/../../app/Controllers/CheckAuth.php'; 
 
-// 2. Cargar el Modelo para listar los lugares
+// SOLO ADMIN
+if ($_SESSION['user_rol'] !== 'administrador') {
+    // Si es operador, mandarlo a su sitio
+    if ($_SESSION['user_rol'] === 'operador') {
+        header("Location: mensajes.php");
+        exit;
+    }
+    // Si es turista, al inicio
+    header("Location: ../index.php");
+    exit;
+}
+
+// 3. Cargar Modelos (Solo si pasó la seguridad)
 require_once __DIR__ . '/../../app/Models/Lugar.php'; 
 $lugarModel = new Lugar();
 $lugares = $lugarModel->obtenerLugares();

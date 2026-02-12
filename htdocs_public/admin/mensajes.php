@@ -4,7 +4,7 @@ session_start();
 require_once __DIR__ . '/../../app/Controllers/CheckAuth.php'; 
 
 // Seguridad extra: Solo admin
-if ($_SESSION['user_rol'] !== 'administrador') {
+if (!isset($_SESSION['user_rol']) || ($_SESSION['user_rol'] !== 'administrador' && $_SESSION['user_rol'] !== 'operador')) {
     header("Location: ../index.html");
     exit;
 }
@@ -22,7 +22,6 @@ if ($_SESSION['user_rol'] !== 'administrador') {
 
 <nav class="navbar navbar-dark bg-dark mb-3">
     <div class="container-fluid">
-        <a class="navbar-brand" href="dashboard.php">⬅ Volver al Dashboard</a>
         <span class="navbar-text text-white">Mensajería Interna</span>
     </div>
 </nav>

@@ -16,7 +16,7 @@
             <div class="col-md-8 login-container">
                 <div class="card shadow">
                     <div class="card-header text-center bg-primary text-white">
-                        <h4 class="mb-0">Acceso de Administrador</h4>
+                        <h4 class="mb-0">Inicio de Sesión</h4>
                     </div>
                     <div class="card-body">
                         
