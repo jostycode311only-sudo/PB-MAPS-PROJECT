@@ -9,20 +9,20 @@ class Lugar {
         $this->pdo = connectDB();
     }
 
-    // 1. Insertar nuevo lugar (Actualizado con Categoría)
-    public function insertarLugar($nombre, $descripcion, $categoria, $url_imagen, $admin_id) {
-        $sql = "INSERT INTO lugarturistico (nombre, descripcion, categoria, url_imagen, fk_admin_id, fecha_creacion) 
-                VALUES (?, ?, ?, ?, ?, NOW())";
+    // 1. Insertar nuevo lugar (Actualizado con Teléfono)
+    public function insertarLugar($nombre, $descripcion, $categoria, $url_imagen, $telefono, $admin_id) {
+        $sql = "INSERT INTO lugarturistico (nombre, descripcion, categoria, url_imagen, telefono, fk_admin_id, fecha_creacion) 
+                VALUES (?, ?, ?, ?, ?, ?, NOW())";
         try {
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$nombre, $descripcion, $categoria, $url_imagen, $admin_id]);
+            return $stmt->execute([$nombre, $descripcion, $categoria, $url_imagen, $telefono, $admin_id]);
         } catch (PDOException $e) {
             error_log("Error Lugar::insertarLugar: " . $e->getMessage());
             return false;
         }
     }
 
-    // 2. Obtener TODOS los lugares (Para Dashboard Admin)
+    // 2. Obtener TODOS los lugares
     public function obtenerLugares() {
         $sql = "SELECT * FROM lugarturistico ORDER BY fecha_creacion DESC";
         try {
@@ -34,8 +34,7 @@ class Lugar {
         }
     }
 
-    // 3. Obtener Lugares POR CATEGORÍA (Vital para Hoteles.php)
-    // ESTA ES LA FUNCIÓN QUE TE FALTABA
+    // 3. Obtener Lugares POR CATEGORÍA
     public function obtenerLugaresPorCategoria($categoria) {
         $sql = "SELECT * FROM lugarturistico WHERE categoria = ? ORDER BY fecha_creacion DESC";
         try {
@@ -48,7 +47,7 @@ class Lugar {
         }
     }
 
-    // 4. Obtener un solo lugar por ID (Para Editar)
+    // 4. Obtener un solo lugar por ID
     public function obtenerLugarPorId($id) {
         $sql = "SELECT * FROM lugarturistico WHERE id = ?";
         try {
@@ -60,12 +59,12 @@ class Lugar {
         }
     }
 
-    // 5. Actualizar lugar (Actualizado con Categoría)
-    public function actualizarLugar($id, $nombre, $descripcion, $categoria, $url_imagen) {
-        $sql = "UPDATE lugarturistico SET nombre = ?, descripcion = ?, categoria = ?, url_imagen = ? WHERE id = ?";
+    // 5. Actualizar lugar (Actualizado con Teléfono)
+    public function actualizarLugar($id, $nombre, $descripcion, $categoria, $url_imagen, $telefono) {
+        $sql = "UPDATE lugarturistico SET nombre = ?, descripcion = ?, categoria = ?, url_imagen = ?, telefono = ? WHERE id = ?";
         try {
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$nombre, $descripcion, $categoria, $url_imagen, $id]);
+            return $stmt->execute([$nombre, $descripcion, $categoria, $url_imagen, $telefono, $id]);
         } catch (PDOException $e) {
             return false;
         }

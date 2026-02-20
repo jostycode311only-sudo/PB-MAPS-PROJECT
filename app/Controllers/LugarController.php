@@ -1,129 +1,116 @@
 <?php
 // app/Controllers/LugarController.php
 
+// Activar errores temporalmente
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 
-// --- INCLUSIONES (SOLO UNA VEZ, AL PRINCIPIO) ---
+// Incluir el modelo de Lugar
 require_once __DIR__ . '/../Models/Lugar.php';
-require_once __DIR__ . '/../Models/Response.php'; 
-// --------------------------------------------------
 
-// Definir ruta de redirección para mensajes
-$dashboardRedirect = '/PB-MAPS-PROJECT/htdocs_public/admin/dashboard.php';
+// Validar que se ha enviado una acción
+$action = $_POST['action'] ?? '';
 
 
-// --- 1. MANEJO DE PETICIONES GET (LEER UN SOLO LUGAR PARA EDICIÓN) ---
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'get' && isset($_GET['id'])) {
+// ELIMINAR UN LUGAR
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'eliminar') {
     
-    $lugarModel = new Lugar();
-    $id = (int)$_GET['id'];
-    
-    $lugar = $lugarModel->obtenerLugarPorId($id);
-
-    if ($lugar) {
-        http_response_code(200);
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 200, 'message' => 'Lugar obtenido con éxito.', 'lugar' => $lugar]);
-        exit;
-    } else {
-        (new Response("Lugar no encontrado o ID inválido.", 404))->send();
-        exit;
-    }
-}
-// ----------------------------------------------------------------------
-
-
-// --- 2. MANEJO DE PETICIONES POST (CREAR) Y PUT (ACTUALIZAR) ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT') {
-    
-    // Comprobación de rol de seguridad para operaciones de escritura
+    // Seguridad: Solo admin
     if (!isset($_SESSION['user_rol']) || $_SESSION['user_rol'] !== 'administrador') {
-        header("Location: {$dashboardRedirect}?error=acceso_denegado_escritura");
+        header("Location: ../../htdocs_public/index.php");
         exit;
     }
 
-    $input = ($_SERVER['REQUEST_METHOD'] === 'POST') ? $_POST : json_decode(file_get_contents('php://input'), true);
-
-    $idLugar = $input['id_lugar'] ?? null; 
+    $id = $_POST['id'] ?? null;
     
-    $nombre = trim($input['nombre_lugar'] ?? $input['nombre'] ?? ''); 
-    $descripcion = trim($input['descripcion'] ?? '');
-    // NUEVO: Capturamos la categoría, si no existe ponemos 'Sitio General' por defecto
-    $categoria = trim($input['categoria'] ?? 'Sitio General');
-    $urlImagen = trim($input['url_imagen'] ?? ''); 
+    if (empty($id)) {
+        header("Location: ../../htdocs_public/admin/dashboard.php?error=campos_incompletos_eliminar");
+        exit;
+    }
+
+    // Ejecutar el borrado
+    $lugarModel = new Lugar();
+    $lugarModel->eliminarLugar((int)$id);
+    
+    header("Location: ../../htdocs_public/admin/dashboard.php?success=eliminado");
+    exit;
+}
+
+
+// CREAR UN NUEVO LUGAR
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'crear') {
+    
+    if (!isset($_SESSION['user_rol']) || $_SESSION['user_rol'] !== 'administrador') {
+        header("Location: ../../htdocs_public/index.php");
+        exit;
+    }
+
+    // Capturar datos del formulario (Usando los 'name' del HTML)
+    $nombre = trim($_POST['nombre'] ?? ''); 
+    $descripcion = trim($_POST['descripcion'] ?? '');
+    $categoria = trim($_POST['categoria'] ?? 'Sitio General');
+    $urlImagen = trim($_POST['url_imagen'] ?? ''); 
+    $telefono = trim($_POST['telefono'] ?? '');
     
     $adminId = $_SESSION['user_id'] ?? null; 
 
-    // 3. Validación de datos obligatorios
-    if (empty($nombre) || empty($descripcion) || empty($adminId)) {
-        if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-             (new Response("El nombre y la descripción son campos obligatorios.", 400))->send();
-        } else {
-            header("Location: {$dashboardRedirect}?error=campos_incompletos");
-        }
+    if (empty($nombre) || empty($descripcion)) {
+        header("Location: ../../htdocs_public/admin/dashboard.php?error=campos_incompletos_crear");
         exit;
     }
 
-    // 4. Instanciar el modelo e iniciar variables
     $lugarModel = new Lugar();
-    $resultado = false;
-    $mensaje = '';
-    $statusCode = 500;
-
-    // 5. Lógica de Crear (POST) vs Actualizar (PUT)
-    if ($idLugar) {
-        // A) OPERACIÓN DE ACTUALIZACIÓN (PUT)
-        if (!is_numeric($idLugar)) {
-            (new Response("ID de lugar inválido para la actualización.", 400))->send();
-            exit;
-        }
-        // ACTUALIZADO: Pasamos la categoría al método actualizarLugar
-        $resultado = $lugarModel->actualizarLugar((int)$idLugar, $nombre, $descripcion, $categoria, $urlImagen);
-        $mensaje = $resultado ? "Lugar turístico actualizado con éxito." : "Error al actualizar el lugar.";
-        $statusCode = $resultado ? 200 : 500;
-        
-    } else {
-        // B) OPERACIÓN DE CREACIÓN (POST)
-        // ACTUALIZADO: Pasamos la categoría al método insertarLugar
-        $resultado = $lugarModel->insertarLugar($nombre, $descripcion, $categoria, $urlImagen, $adminId);
-        $mensaje = $resultado ? "Lugar turístico creado con éxito." : "Error al guardar el lugar.";
-        $statusCode = $resultado ? 201 : 500;
-    }
-
-    // 6. Respuesta final
-    if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-         // Responder en JSON para peticiones AJAX (PUT)
-        (new Response($mensaje, $statusCode))->send();
-    } else {
-        // Redirigir con mensaje para peticiones de formulario (POST)
-        $param = ($resultado) ? 'success=lugar_creado' : 'error=db_fallo_insert';
-        header("Location: {$dashboardRedirect}?{$param}");
-    }
-    exit;
-}
-
-// --- 3. MANEJO DE PETICIÓN DELETE (ELIMINAR) ---
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['id'])) {
-
-    if (!isset($_SESSION['user_rol']) || $_SESSION['user_rol'] !== 'administrador') {
-        (new Response("Acceso denegado para eliminar.", 403))->send();
-        exit;
-    }
-    
-    $lugarModel = new Lugar();
-    $id = (int)$_GET['id'];
-    
-    $resultado = $lugarModel->eliminarLugar($id);
+    $resultado = $lugarModel->insertarLugar($nombre, $descripcion, $categoria, $urlImagen, $telefono, $adminId);
 
     if ($resultado) {
-        (new Response("Lugar eliminado con éxito.", 200))->send();
+        header("Location: ../../htdocs_public/admin/dashboard.php?success=lugar_creado");
     } else {
-        (new Response("Error al eliminar el lugar.", 500))->send();
+        header("Location: ../../htdocs_public/admin/dashboard.php?error=db_fallo_insert");
     }
     exit;
 }
 
-// Si se accede al controlador con otro método no soportado
-(new Response("Método de solicitud no soportado.", 405))->send();
 
+// C. EDITAR UN LUGAR EXISTENTE 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'editar') {
+    
+    if (!isset($_SESSION['user_rol']) || $_SESSION['user_rol'] !== 'administrador') {
+        header("Location: ../../htdocs_public/index.php");
+        exit;
+    }
+
+    // Usamos los nombres correctos (name="id", name="nombre")
+    $id = $_POST['id'] ?? null;
+    $nombre = trim($_POST['nombre'] ?? ''); 
+    $descripcion = trim($_POST['descripcion'] ?? '');
+    $categoria = trim($_POST['categoria'] ?? 'Sitio General');
+    $urlImagen = trim($_POST['url_imagen'] ?? ''); 
+    $telefono = trim($_POST['telefono'] ?? '');
+    
+    if (empty($id) || empty($nombre) || empty($descripcion)) {
+        header("Location: ../../htdocs_public/admin/dashboard.php?error=campos_incompletos_editar");
+        exit;
+    }
+
+    // CORRECCIÓN 2: Se usa la función actualizarLugar() que sí existe en tu Modelo
+    $lugarModel = new Lugar();
+    $resultado = $lugarModel->actualizarLugar((int)$id, $nombre, $descripcion, $categoria, $urlImagen, $telefono);
+    
+    if ($resultado) {
+        header("Location: ../../htdocs_public/admin/dashboard.php?success=actualizado");
+    } else {
+        header("Location: ../../htdocs_public/admin/dashboard.php?error=db_fallo_actualizar");
+    }
+    exit;
+}
+
+// Si no entra a ningún bloque, devolver al dashboard
+header("Location: ../../htdocs_public/admin/dashboard.php");
+exit;
 ?>

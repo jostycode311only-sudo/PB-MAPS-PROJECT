@@ -81,6 +81,6 @@ if ($operadorId === $miId) {
 </div>
 
 <!-- Lógica JS específica para el turista -->
-<script src="js/chat_turista.js?v=2"></script>
+<script src="js/chat_turista.js?v=3"></script>
 </body>
 </html>
