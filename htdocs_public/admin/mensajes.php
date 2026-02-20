@@ -28,7 +28,7 @@ if (!isset($_SESSION['user_rol']) || ($_SESSION['user_rol'] !== 'administrador' 
 <!-- BARRA DE NAVEGACIÓN ADMINISTRADOR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">PB-MAPS <span class="badge bg-danger">Admin</span></a>
+        <a class="navbar-brand fw-bold" href="#">PB-MAPS <span class="badge bg-danger">Operador</span></a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminMenu">
             <span class="navbar-toggler-icon"></span>
@@ -36,12 +36,7 @@ if (!isset($_SESSION['user_rol']) || ($_SESSION['user_rol'] !== 'administrador' 
 
         <div class="collapse navbar-collapse" id="adminMenu">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 admin-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="dashboard.php"><i class="bi bi-geo-alt"></i> Sitio De Interes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="usuarios.php"><i class="bi bi-people"></i> Usuarios y Operadores</a>
-                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link active" href="mensajes.php"><i class="bi bi-chat-dots"></i> Mensajería</a>
                 </li>

@@ -157,7 +157,7 @@ $lugares = $lugarModel->obtenerLugares();
     </div>
 </div> 
 
-<!-- 1. MODAL: CREAR LUGAR -->
+<!--MODAL: CREAR LUGAR -->
 <div class="modal fade" id="lugarModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -203,7 +203,7 @@ $lugares = $lugarModel->obtenerLugares();
     </div>
 </div>
 
-<!-- 2. MODAL: EDITAR LUGAR -->
+<!--MODAL: EDITAR LUGAR -->
 <div class="modal fade" id="modalEditarLugar" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -254,7 +254,7 @@ $lugares = $lugarModel->obtenerLugares();
 
 <!-- Scripts Personalizados -->
 <script>
-    // 1. Script para Filtrar la Tabla
+    // Script para Filtrar la Tabla
     function filtrarTabla(categoria, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => {
             b.classList.remove('active', 'btn-primary');
@@ -274,9 +274,9 @@ $lugares = $lugarModel->obtenerLugares();
         });
     }
 
-    // 2. Script para abrir y llenar el Modal de Edición
+    // Script para abrir y llenar el Modal de Edición
     function abrirModalEditar(btn) {
-        // Obtenemos los datos desde el botón que se hizo clic
+        // Aquí se obtienen los datos desde el botón que se hizo clic
         document.getElementById('edit_id').value = btn.getAttribute('data-id');
         document.getElementById('edit_nombre').value = btn.getAttribute('data-nombre');
         document.getElementById('edit_categoria').value = btn.getAttribute('data-categoria');
@@ -284,7 +284,7 @@ $lugares = $lugarModel->obtenerLugares();
         document.getElementById('edit_url_imagen').value = btn.getAttribute('data-imagen');
         document.getElementById('edit_telefono').value = btn.getAttribute('data-telefono');
         
-        // Mostramos el modal usando Bootstrap
+        // Se muestra el modal usando Bootstrap
         var modal = new bootstrap.Modal(document.getElementById('modalEditarLugar'));
         modal.show();
     }

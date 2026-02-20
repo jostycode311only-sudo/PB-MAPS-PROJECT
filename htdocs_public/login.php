@@ -100,10 +100,7 @@
     <a href="index.php" class="back-link"><i class="bi bi-arrow-left"></i> Volver al Inicio</a>
 
     <div class="login-card">
-        
         <div class="logo-container">
-            <!-- AQUÍ PONDRÁS TU LOGO MÁS ADELANTE -->
-            <!-- <img src="img/tu-logo.png" alt="Logo PB-MAPS"> -->
             <h2 class="fw-bold text-primary mb-0"><i class="bi bi-geo-alt-fill text-warning"></i> PB-MAPS</h2>
             <p class="text-muted small">Descubre Puerto Boyacá</p>
         </div>

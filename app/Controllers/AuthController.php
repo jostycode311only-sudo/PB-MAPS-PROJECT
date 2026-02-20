@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: ../../htdocs_public/admin/mensajes.php");
             
         } else {
-            // CASO 3: SI ES USUARIO NORMAL (TURISTA)
+            // SI ES USUARIO NORMAL (TURISTA)
             // Lo mandamos a la página de inicio para que vea hoteles y sitios
             header("Location: ../../htdocs_public/index.php");
         }

@@ -2,9 +2,7 @@
 // htdocs_public/chat_turista.php
 session_start();
 
-// --- CORRECCIÓN DE SEGURIDAD ---
-// No usamos CheckAuth.php porque ese bloquea a los turistas.
-// Solo verificamos que el usuario haya iniciado sesión.
+// SEGURIDAD 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php?error=debes_iniciar_sesion");
     exit;
@@ -13,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once __DIR__ . '/../app/Models/Usuario.php'; 
 
-// 1. Validar que haya un ID de operador en la URL
+//Validar que haya un ID de operador en la URL
 if (!isset($_GET['id'])) {
     header("Location: operadores.php");
     exit;
