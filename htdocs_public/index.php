@@ -52,6 +52,7 @@ $userRol = $_SESSION['user_rol'] ?? '';
                     <li class="nav-item"><a class="nav-link" href="hoteles.php">Hoteles</a></li>
                     <li class="nav-item"><a class="nav-link" href="sitios.php">Sitios Turísticos</a></li>
                     <li class="nav-item"><a class="nav-link" href="operadores.php">Operadores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contactanos.php">Contacto</a></li>
 
                     <!-- LÓGICA DE USUARIO LOGUEADO -->
                     <?php if ($isLoggedIn): ?>

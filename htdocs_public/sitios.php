@@ -73,6 +73,7 @@ if ($todosLosLugares) {
                     <li class="nav-item"><a class="nav-link" href="hoteles.php">Hoteles</a></li>
                     <li class="nav-item"><a class="nav-link active" href="sitios.php">Sitios Turísticos</a></li>
                     <li class="nav-item"><a class="nav-link" href="operadores.php">Operadores</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contactanos.php">Contacto</a></li>
                     <?php if(isset($_SESSION['user_id'])): ?>
                          <li class="nav-item"><a class="btn btn-outline-light ms-3 btn-sm" href="../app/Controllers/LogoutController.php">Salir</a></li>
                     <?php else: ?>
